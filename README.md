@@ -1,0 +1,2 @@
+# HierKoennteEinCoolerProjektnameStehen
+Generic encryption software
