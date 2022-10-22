@@ -1,2 +1,2 @@
-# HierKoennteEinCoolerProjektnameStehen
+# Encryptio
 Generic encryption software
