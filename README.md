@@ -1,7 +1,7 @@
 # Encryptio 
 Generic encryption software
 
-## Prerequisities 
+## Prerequisites 
 
 ## Usage
 
