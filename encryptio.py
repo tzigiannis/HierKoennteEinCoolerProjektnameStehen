@@ -15,10 +15,10 @@ print("")
 
 ## possible encryption algorithms
 class EncryptionAlgorithms(Enum): 
-    aes='AES'
-    des='DES'
-    trippleDes='3DES'
-    idea='IDEA'
+    AES='AES'
+    DES='DES'
+    TRIPPLEDES='3DES'
+    IDEA='IDEA'
 
     def __str__(self):
         return self.value
