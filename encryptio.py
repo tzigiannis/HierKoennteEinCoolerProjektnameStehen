@@ -43,13 +43,13 @@ parser.add_argument('encryptionLibrary', help='library to encrypt object with', 
 
 parser.add_argument('-o', '--outputFile', help='file to write output to', type=argparse.FileType('w'), dest='outputFile')
 
-spOne = parser.add_subparsers(title='encryptionObjects', description='valid encryption object', help='use \"file\" or \"message\" -h for help about the encryption object')
+spOne = parser.add_subparsers(title='encryptionObjectIdentifier', description='valid encryption object identifier', help='use \"file\" or \"message\" -h for help about the encryption object identifier')
 
 file_subparser = spOne.add_parser('file', help='encrypt a file')
 file_subparser.add_argument('filePath', help='path to file', type=argparse.FileType('r', encoding='UTF-8'))
 
-message_subparser = spOne.add_parser('message', help='encrypt a message')
-message_subparser.add_argument('messageText', help='message', type=str)
+message_subparser = spOne.add_parser('message', help='encrypt a string message')
+message_subparser.add_argument('messageText', help='message text', type=str)
 
 ## save the user args
 args = parser.parse_args()
