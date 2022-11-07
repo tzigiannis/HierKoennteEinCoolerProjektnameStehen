@@ -5,6 +5,12 @@ Generic encryption software
 
 ## Usage
 
+install required libraries via requirements 
+```bash
+pip install -r requirements.txt
+```
+This will download and install the [cryptography](https://pypi.org/project/cryptography/) and [cryptodome](https://pypi.org/project/pycryptodome/#description) libraries. 
+
 encryptio uses a CLI interface(using [argparse](https://docs.python.org/3/library/argparse.html)): 
 
 ```bash
