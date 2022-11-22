@@ -1,7 +1,9 @@
 #! /usr/bin/env python3
 
+from __future__ import annotations
 import argparse
 import os
+import sys
 from datetime import datetime
 from enum import Enum
 from Crypto.Cipher import AES, DES3, Blowfish, DES
@@ -16,12 +18,23 @@ print(authorSignature)
 
 
 ## possible crypto algorithms
-class CryptoAlgorithms(Enum):
-    AES = 'AES'
-    DES = 'DES'
-    TRIPLEDES = '3DES'
-    IDEA = 'IDEA'
-    BLOWFISH = 'BLOWFISH'
+class CryptoAlgorithms(str, Enum):
+    key_length: str
+
+    def __new__(
+        cls, algorithm: str, key_length: str = ''
+    ) -> CryptoAlgorithms:
+        obj = str.__new__(cls, algorithm)
+        obj._value_ = algorithm
+
+        obj.key_length = key_length
+        return obj
+
+    AES = ('AES', [128, 192, 256])
+    DES = ('DES',[64])
+    TRIPLEDES = ('3DES', [128, 192])
+    IDEA = ('IDEA', [128])
+    BLOWFISH = ('BLOWFISH', [32, 448])
 
     def __str__(self):
         return self.value
@@ -178,7 +191,7 @@ def encrypt_blowfish(data, key, mode):
 
     if mode == Blowfish.MODE_EAX:
         additional_information = ['nonce_tag', cipher.nonce + tag]
-    elif mode == AES.MODE_ECB:
+    elif mode == AES.MODE_ECB or mode == AES.MODE_CTR:
         additional_information = []
     else:
         additional_information = ['initialization_vector', cipher.iv]
@@ -207,6 +220,7 @@ def encrypt_mode(args):
 
 ## mode listing
 def arg_encryption_mode(args):
+    check_key(args)
     encrypt_mode(args)
 
 
@@ -218,17 +232,29 @@ def arg_decryption_mode(args):
 #     bruteforce_mode(args)
 
 
-## argument checker
-def check_key(key):
-    if not (key.isalpha()):
-        raise argparse.ArgumentTypeError('Key is not a string')
+## key checker
+def check_key(args):
+    key = args.cryptoKey
+    key_length = len(key)*8
+    algorithm = args.cryptoAlgorithm
+    key_lengths = algorithm.key_length
 
-    if len(key) < 8:
-        raise argparse.ArgumentTypeError('Key to short - Minimum 8 characters')
+    if not (key.isalpha()):
+        print('Key is not a string')
+        sys.exit()
+
+    if algorithm == CryptoAlgorithms.BLOWFISH and not(key_lengths[0] <= key_length <= key_lengths[1]):
+        print('Key length is not correct for the algorithm')
+        sys.exit()
+
+    if algorithm != CryptoAlgorithms.BLOWFISH and key_length not in key_lengths:
+        print('Key length is not correct for the algorithm')
+        sys.exit()
 
     return key
 
 
+## create a binary file with encrypted bytes
 def create_binary_file(ciphertext, algorithm, additional_information):
     # header: 8 bytes for algorithm, 1 byte for type of additional_information, 32 bytes for additional_information = 41 bytes
     filename = 'encryptio_' + datetime.now().strftime("%H_%M_%S") + '.enc'
@@ -252,6 +278,7 @@ def create_binary_file(ciphertext, algorithm, additional_information):
         f.write(ciphertext)
 
 
+## fill data with 0 for given block size
 def pad_data(data_to_pad, block_size):
     number_zeros = block_size - len(data_to_pad)
     zeros = str.encode('0'*number_zeros)
@@ -276,7 +303,7 @@ def main():
     encryption_sub_parser = sub_parser.add_parser('encryption', help='encrypt a string')
     encryption_sub_parser.add_argument('cryptoAlgorithm', help='Algorithm to encrypt', type=CryptoAlgorithms,
                                        choices=CryptoAlgorithms)
-    encryption_sub_parser.add_argument('cryptoKey', help='Key to encrypt', type=check_key)
+    encryption_sub_parser.add_argument('cryptoKey', help='Key to encrypt', type=str)
     encryption_sub_parser.add_argument('cryptoMode', help='Mode to encrypt', type=CryptoModes, choices=CryptoModes)
     encryption_sub_parser.add_argument('cryptoData', help='data string to encrypt', type=str)
     encryption_sub_parser.set_defaults(func=arg_encryption_mode)
@@ -285,7 +312,7 @@ def main():
     decryption_sub_parser = sub_parser.add_parser('decryption', help='decrypt a string')
     decryption_sub_parser.add_argument('cryptoAlgorithm', help='Algorithm to decrypt', type=CryptoAlgorithms,
                                        choices=CryptoAlgorithms)
-    decryption_sub_parser.add_argument('cryptoKey', help='Key to decrypt', type=check_key)
+    decryption_sub_parser.add_argument('cryptoKey', help='Key to decrypt', type=str)
     decryption_sub_parser.add_argument('cryptoMode', help='Mode to decrypt', type=CryptoModes, choices=CryptoModes)
     decryption_sub_parser.add_argument('cryptoData', help='encrypted data string to decrypt', type=str)
     decryption_sub_parser.set_defaults(func=arg_decryption_mode)
