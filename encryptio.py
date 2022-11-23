@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 import argparse
+import pathlib
 import os
 import sys
 from datetime import datetime
 from enum import Enum
 from Crypto.Cipher import AES, DES3, Blowfish, DES
-from Crypto.Util.Padding import pad
+from Crypto.Util.Padding import pad, unpad
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 
@@ -38,7 +39,6 @@ class CryptoAlgorithms(str, Enum):
 
     def __str__(self):
         return self.value
-
 
 ## possible modes
 class CryptoModes(Enum):
@@ -198,6 +198,77 @@ def encrypt_blowfish(data, key, mode):
 
     create_binary_file(ciphertext, 'BLOWFISH', additional_information)
 
+## decryption
+def decrypt_aes(data, key, mode): 
+    match mode: 
+        case CryptoModes.CBC:
+            mode = AES.MODE_CBC
+        case CryptoModes.CFB:
+            mode = AES.MODE_CFB
+        case CryptoModes.CTR:
+            mode = AES.MODE_CTR
+        case CryptoModes.EAX:
+            mode = AES.MODE_EAX
+        case CryptoModes.ECB:
+            mode = AES.MODE_ECB
+        case CryptoModes.OFB:
+            mode = AES.MODE_OFB
+        case _:
+            print('This mode is not available for the selected algorithm')
+            return
+
+    # /* does not work right now
+    print(data)
+    cipher = AES.new(key, mode, data[2])
+    print(len(data[5]))
+    test = data[5]
+    test = test[8:]
+    print(len(test))
+    print(test)
+    pt = unpad(cipher.decrypt(test), AES.block_size)
+    print(pt)
+    # does not work right now */
+
+def decrypt_des(data, key, mode, algorithm):
+    match mode: 
+        case CryptoModes.CBC:
+            mode = algorithm.MODE_CBC
+        case CryptoModes.CFB:
+            mode = algorithm.MODE_CFB
+        case CryptoModes.CTR:
+            mode = algorithm.MODE_CTR
+        case CryptoModes.ECB:
+            mode = algorithm.MODE_ECB
+        case CryptoModes.OFB:
+            mode = algorithm.MODE_OFB
+        case _:
+            print('This mode is not available for the selected algorithm')
+            return
+    
+    # /* does not work right now 
+        
+    # does not work right now */
+
+def decrypt_idea(data, key, mode):
+    print(1)
+  
+def decrypt_blowfish(data, key, mode):
+    match mode:
+        case CryptoModes.CBC:
+            mode = Blowfish.MODE_CBC
+        case CryptoModes.CFB:
+            mode = Blowfish.MODE_CFB
+        case CryptoModes.CTR:
+            mode = Blowfish.MODE_CTR
+        case CryptoModes.EAX:
+            mode = Blowfish.MODE_EAX
+        case CryptoModes.ECB:
+            mode = Blowfish.MODE_ECB
+        case CryptoModes.OFB:
+            mode = Blowfish.MODE_OFB
+        case _:
+            print('This mode is not available for the selected algorithm')
+            return
 
 ## mode execution
 def encrypt_mode(args):
@@ -213,8 +284,19 @@ def encrypt_mode(args):
         case CryptoAlgorithms.BLOWFISH:
             encrypt_blowfish(str.encode(args.cryptoData), str.encode(args.cryptoKey), args.cryptoMode)
 
-
-# def decrypt_mode(args):
+def decrypt_mode(args): 
+    data = read_binary_file(args.cryptoDataFile)
+    match args.cryptoAlgorithm:
+        case CryptoAlgorithms.AES:
+            decrypt_aes(data, str.encode(args.cryptoKey), args.cryptoMode)
+        case CryptoAlgorithms.DES:
+            decrypt_des(data, str.encode(args.cryptoKey), args.cryptoMode, DES)
+        case CryptoAlgorithms.TRIPLEDES:
+            decrypt_des(data, str.encode(args.cryptoKey), args.cryptoMode, DES3)
+        case CryptoAlgorithms.IDEA:
+            decrypt_idea(data, str.encode(args.cryptoKey), args.cryptoMode)
+        case CryptoAlgorithms.BLOWFISH:
+            decrypt_blowfish(data, str.encode(args.cryptoKey), args.cryptoMode)
 
 # def bruteforce_mode(args):
 
@@ -225,7 +307,8 @@ def arg_encryption_mode(args):
 
 
 def arg_decryption_mode(args):
-    encrypt_mode(args)
+    check_key(args)
+    decrypt_mode(args)
 
 
 # def arg_bruteforce_mode(args):
@@ -277,7 +360,39 @@ def create_binary_file(ciphertext, algorithm, additional_information):
         f.write(information_padded)
         f.write(ciphertext)
 
+## read binary file with encrypted data
+def read_binary_file(fileName) -> tuple: 
+    algorithm = b'0'
+    typeOfAdditionalInfo = b'0'
+    initializationVector = b'0'
+    nonce = b'0'
+    tag = b'0'
+    data = b'0'
 
+    with open(fileName, "rb") as file: 
+        algorithm = file.read()[0:8]
+
+    with open(fileName, "rb") as file: 
+        typeOfAdditionalInfo = file.read()[8:9]   
+
+    with open(fileName, "rb") as file: 
+        additionalInfo = file.read()[10:32]
+
+    with open(fileName, "rb") as file: 
+        data = file.read()[33:]
+
+    if typeOfAdditionalInfo.decode('utf-8') == 'I':
+        initializationVector = additionalInfo[0:16]
+    elif typeOfAdditionalInfo.decode('utf-8') == 'N':
+        nonce = additionalInfo
+    elif typeOfAdditionalInfo.decode('utf-8') == 'T':
+        nonce = slice(0, len(additionalInfo)/2)
+        tag = slice(len(additionalInfo)/2, len(additionalInfo))
+
+    dataTuple = (algorithm, typeOfAdditionalInfo, initializationVector, nonce, tag, data)
+    return dataTuple
+
+            
 ## fill data with 0 for given block size
 def pad_data(data_to_pad, block_size):
     number_zeros = block_size - len(data_to_pad)
@@ -314,16 +429,14 @@ def main():
                                        choices=CryptoAlgorithms)
     decryption_sub_parser.add_argument('cryptoKey', help='Key to decrypt', type=str)
     decryption_sub_parser.add_argument('cryptoMode', help='Mode to decrypt', type=CryptoModes, choices=CryptoModes)
-    decryption_sub_parser.add_argument('cryptoData', help='encrypted data string to decrypt', type=str)
+    decryption_sub_parser.add_argument('cryptoDataFile', help='encrypted file to decrypt', type=str)
     decryption_sub_parser.set_defaults(func=arg_decryption_mode)
 
     # bruteforce mode
 
     ## save the user args
     args = parser.parse_args()
-
     args.func(args)
-
 
 if __name__ == "__main__":
     main()
