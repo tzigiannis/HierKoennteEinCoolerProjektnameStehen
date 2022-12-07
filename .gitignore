@@ -1,0 +1,5 @@
+# ignore .vsode files
+*.vscode
+
+# ignore encrypted files
+*.enc
