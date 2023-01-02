@@ -22,7 +22,7 @@ class CryptoAlgorithms(str, Enum):
     key_length: str
 
     def __new__(
-            cls, algorithm: str, key_length: str = ''
+        cls, algorithm: str, key_length: str = ''
     ) -> CryptoAlgorithms:
         obj = str.__new__(cls, algorithm)
         obj._value_ = algorithm
@@ -377,13 +377,13 @@ def check_key(args):
 
 ## create a binary file with encrypted bytes
 def create_binary_file(ciphertext, algorithm, additional_information):
-    # header: 8 bytes for algorithm, 32 bytes for additional_information = 40 bytes
+    # header: 8 bytes for algorithm, 16 bytes for additional_information = 24 bytes
     filename = 'encryptio_' + datetime.now().strftime("%H_%M_%S") + '.enc'
 
     if additional_information:
-        information_padded = pad_data(additional_information, 32)
+        information_padded = pad_data(additional_information, 16)
     else:
-        information_padded = str.encode('0' * 32)
+        information_padded = str.encode('0' * 16)
 
     with open(filename, 'wb') as file:
         file.write(str.encode(algorithm))
@@ -401,8 +401,8 @@ def read_binary_file(fileName) -> tuple:
         information = file.read()
 
     algorithm = information[0:8]
-    additional_information = information[8:40]
-    ciphertext = information[40:]
+    additional_information = information[8:24]
+    ciphertext = information[24:]
 
     data = (algorithm, additional_information, ciphertext)
     return data
