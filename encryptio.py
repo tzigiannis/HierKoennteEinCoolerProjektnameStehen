@@ -54,8 +54,6 @@ class CryptoModes(Enum):
 
 ## encryption
 def encrypt_aes(data, key, mode):
-    # py encryptio.py encryption AES 'dasisteintestabc' CBC 'teststring'
-
     match mode:
         case CryptoModes.CBC:
             mode = AES.MODE_CBC
@@ -87,9 +85,6 @@ def encrypt_aes(data, key, mode):
 
 
 def encrypt_des(data, key, mode, algorithm):
-    # py encryptio.py encryption DES 'testkeyy' CBC 'teststring'
-    # py encryptio.py encryption 3DES 'testkeyyaaaaaaaa' CBC 'teststring'
-
     match mode:
         case CryptoModes.CBC:
             mode = algorithm.MODE_CBC
@@ -97,7 +92,6 @@ def encrypt_des(data, key, mode, algorithm):
         case CryptoModes.CFB:
             mode = algorithm.MODE_CFB
         case CryptoModes.CTR:
-            # TODO: discuss problem: https://stackoverflow.com/questions/52787147/using-ctr-mode-in-des-algorithm-in-python
             mode = algorithm.MODE_CTR
             cipher = algorithm.new(key, mode, nonce=b'')
         case CryptoModes.ECB:
@@ -127,8 +121,6 @@ def encrypt_des(data, key, mode, algorithm):
 
 
 def encrypt_idea(data, key, mode):
-    # py encryptio.py encryption IDEA 'dasisteintestabc' CBC 'teststring'
-
     iv = os.urandom(8)
     pad_data = False
     match mode:
@@ -159,8 +151,6 @@ def encrypt_idea(data, key, mode):
 
 
 def encrypt_blowfish(data, key, mode):
-    # py encryptio.py encryption BLOWFISH 'variablekeyleange' CBC 'teststring'
-
     match mode:
         case CryptoModes.CBC:
             mode = Blowfish.MODE_CBC
@@ -168,7 +158,6 @@ def encrypt_blowfish(data, key, mode):
         case CryptoModes.CFB:
             mode = Blowfish.MODE_CFB
         case CryptoModes.CTR:
-            # TODO: discuss problem: https://stackoverflow.com/questions/52787147/using-ctr-mode-in-des-algorithm-in-python
             mode = Blowfish.MODE_CTR
             cipher = Blowfish.new(key, mode, nonce=b'')
         case CryptoModes.ECB:
@@ -195,8 +184,6 @@ def encrypt_blowfish(data, key, mode):
 
 ## decryption
 def decrypt_aes(data, key, mode):
-    # py encryptio.py decryption AES 'dasisteintestabc' CBC 'encryptio_12_16_25.enc'
-
     match mode:
         case CryptoModes.CBC:
             cipher = AES.new(key, AES.MODE_CBC, data[1][0:16])
@@ -217,13 +204,10 @@ def decrypt_aes(data, key, mode):
             print('This mode is not available for the selected algorithm')
             return
 
-    print(plaintext)
+    print("Decryption successfull: " + plaintext)
 
 
 def decrypt_des(data, key, mode, algorithm):
-    # py encryptio.py decryption DES 'testkeyy' CBC 'encryptio_12_16_25.enc'
-    # py encryptio.py decryption 3DES 'testkeyyaaaaaaaa' CBC 'encryptio_12_16_25.enc'
-
     match mode:
         case CryptoModes.CBC:
             cipher = algorithm.new(key, algorithm.MODE_CBC, data[1][0:8])
@@ -244,12 +228,10 @@ def decrypt_des(data, key, mode, algorithm):
             print('This mode is not available for the selected algorithm')
             return
 
-    print(plaintext)
+    print("Decryption successfull: " + plaintext)
 
 
 def decrypt_idea(data, key, mode):
-    # py encryptio.py decryption IDEA 'dasisteintestabc' CBC 'encryptio_14_19_28.enc'
-
     ciphertext = data[2]
     pad_data = False
 
@@ -276,12 +258,10 @@ def decrypt_idea(data, key, mode):
         unpadder = padding.PKCS7(algorithms.IDEA.block_size).unpadder()
         plaintext = unpadder.update(plaintext) + unpadder.finalize()
 
-    print(plaintext)
+    print("Decryption successfull: " + plaintext)
 
 
 def decrypt_blowfish(data, key, mode):
-    # py encryptio.py decryption BLOWFISH 'variablekeyleange' CBC 'encryptio_14_19_28.enc'
-
     match mode:
         case CryptoModes.CBC:
             cipher = Blowfish.new(key, Blowfish.MODE_CBC, data[1][0:8])
@@ -302,7 +282,7 @@ def decrypt_blowfish(data, key, mode):
             print('This mode is not available for the selected algorithm')
             return
 
-    print(plaintext)
+    print("Decryption successfull: " + plaintext)
 
 
 ## mode execution
@@ -335,9 +315,6 @@ def decrypt_mode(args):
             decrypt_blowfish(data, str.encode(args.cryptoKey), args.cryptoMode)
 
 
-# def bruteforce_mode(args):
-
-
 ## mode listing
 def arg_encryption_mode(args):
     check_key(args)
@@ -347,10 +324,6 @@ def arg_encryption_mode(args):
 def arg_decryption_mode(args):
     check_key(args)
     decrypt_mode(args)
-
-
-# def arg_bruteforce_mode(args):
-#     bruteforce_mode(args)
 
 
 ## key checker
@@ -377,7 +350,6 @@ def check_key(args):
 
 ## create a binary file with encrypted bytes
 def create_binary_file(ciphertext, algorithm, additional_information):
-    # header: 8 bytes for algorithm, 16 bytes for additional_information = 24 bytes
     filename = 'encryptio_' + datetime.now().strftime("%H_%M_%S") + '.enc'
 
     if additional_information:
@@ -389,6 +361,8 @@ def create_binary_file(ciphertext, algorithm, additional_information):
         file.write(str.encode(algorithm))
         file.write(information_padded)
         file.write(ciphertext)
+    
+    print('Encryption successfull: File created: ' + filename)
 
 
 ## read binary file with encrypted data
@@ -422,10 +396,7 @@ def main():
         description='encryptio.py is an easy to use encryption, decryption and bruteforce tool',
         epilog='--- encryptio.py - Laura Tzigiannis, Moritz Nentwig',
         add_help=True)
-
-    # # this code will be activated later again
-    # parser.add_argument('-o', '--outputFile', help='file to write output to', type=argparse.FileType('w'), dest='outputFile')
-
+    
     sub_parser = parser.add_subparsers(title='modes', description='valid modes',
                                        help='use ... MODE -h for help about specific modes')
 
@@ -447,7 +418,6 @@ def main():
     decryption_sub_parser.add_argument('cryptoDataFile', help='encrypted file to decrypt', type=str)
     decryption_sub_parser.set_defaults(func=arg_decryption_mode)
 
-    # bruteforce mode
 
     ## save the user args
     args = parser.parse_args()
