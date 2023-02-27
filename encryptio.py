@@ -204,7 +204,7 @@ def decrypt_aes(data, key, mode):
             print('This mode is not available for the selected algorithm')
             return
 
-    print("Decryption successfull: " + plaintext)
+    print("Decryption successfull: " + str(plaintext, 'utf-8'))
 
 
 def decrypt_des(data, key, mode, algorithm):
@@ -228,7 +228,7 @@ def decrypt_des(data, key, mode, algorithm):
             print('This mode is not available for the selected algorithm')
             return
 
-    print("Decryption successfull: " + plaintext)
+    print("Decryption successfull: " + str(plaintext, 'utf-8'))
 
 
 def decrypt_idea(data, key, mode):
@@ -258,7 +258,7 @@ def decrypt_idea(data, key, mode):
         unpadder = padding.PKCS7(algorithms.IDEA.block_size).unpadder()
         plaintext = unpadder.update(plaintext) + unpadder.finalize()
 
-    print("Decryption successfull: " + plaintext)
+    print("Decryption successfull: " + str(plaintext, 'utf-8'))
 
 
 def decrypt_blowfish(data, key, mode):
@@ -282,7 +282,7 @@ def decrypt_blowfish(data, key, mode):
             print('This mode is not available for the selected algorithm')
             return
 
-    print("Decryption successfull: " + plaintext)
+    print("Decryption successfull: " + str(plaintext, 'utf-8'))
 
 
 ## mode execution
