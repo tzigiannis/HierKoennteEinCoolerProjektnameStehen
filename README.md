@@ -63,6 +63,10 @@ encryptio.py - Published by Laura Tzigiannis and Moritz Nentwig
 ```bash
 python3 encryptio.py decryption AES 'dasisteintestabc' CBC encryptio_20_56_06.enc
 
+encryptio.py - Published by Laura Tzigiannis and Moritz Nentwig
+---------------------------------------------------------------
+
+Decryption successfull: This string should be encrypted
 ```
 
 ### determining
