@@ -57,6 +57,8 @@ python3 encryptio.py encryption AES 'dasisteintestabc' CBC 'This string should b
 
 encryptio.py - Published by Laura Tzigiannis and Moritz Nentwig
 ---------------------------------------------------------------
+
+Encryption successfull: File created: encryptio_20_56_06.enc
 ```
 
 ### decryption
