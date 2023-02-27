@@ -6,14 +6,13 @@ import os
 import sys
 
 ## print header first 
-## print header first
-authorSignature = '\nedeterminer.py - Published by Laura Tzigiannis and Moritz Nentwig\n'
+authorSignature = '\ndeterminer.py - Published by Laura Tzigiannis and Moritz Nentwig\n'
 authorSignature += '---------------------------------------------------------------\n'
 print(authorSignature)
 
 ## tests
 def check_file_extension(file): 
-    file_extension = file[file.rfind("."):]
+    _, file_extension = os.path.splitext(file)
     if file_extension == ".aes":
         return("AES")
     elif file_extension == ".des":
@@ -31,29 +30,30 @@ def check_file_header(file):
     encryption_algorithms = ["AES", "DES", "3DES", "IDEA", "Blowfish"]
     file_header = file.read(128)
     for algorithm in encryption_algorithms: 
-        if algorithm.encode('utf-8') in binascii.hexlify(file_header):
+        if algorithm.encode('utf-8') in file_header:
             return algorithm 
     return("No encryption algorithm found in file header")
 
 def check_block_size(file):
-    cipher_file_length = len(file.read())
+    cipher_file_length = os.path.getsize(file.name)
 
     # check additionally if file is encrypted with encryptio.py 
     # in case of encryptio.py, the header is 24 bytes long and has to be subtracted from the file length
-    file_name = file.name
-    file_extension = file_name[file_name.rfind("."):]
-    if(file_name in "encryptio" and file_extension == ".enc"):
+    file_name, file_extension = os.path.splitext(file.name)
+    if("encryptio" in file_name and file_extension == ".enc"):
         header_length = 24
         cipher_file_length = cipher_file_length - header_length
     
     if(cipher_file_length % 8 != 0):
-        return("Cipher length is not a divisible by 8")
+        return("Blocksize not supported by given encryption algorithms")
     if(cipher_file_length % 16 != 0):
         return ["DES", "3DES", "IDEA", "Blowfish"]
     return ["AES", "DES", "3DES", "IDEA", "Blowfish"]
 
 def check_key_length(key):
     key_length = len(key) * 8
+    if key_length == 64:
+        return ["DES", "Blowfish"]
     if key_length == 128:
         return ["AES", "3DES", "Blowfish", "IDEA"]
     elif key_length == 192:
@@ -63,7 +63,7 @@ def check_key_length(key):
     elif 32 < key_length < 448:
         return ["Blowfish"]
     else:
-        return ["Key length is not supported"]
+        return ["Key length not supported by given encryption algorithms"]
 
 ## mode execution
 def determine_mode(args): 
@@ -72,7 +72,7 @@ def determine_mode(args):
     print("File extension: " + check_file_extension(args.file))
     print("File header: " + check_file_header(open_file))
     print("Block size: " + ", ".join(check_block_size(open_file)))
-    print("Key length: ".join(check_key_length(args.key)))
+    print("Key length: " + ", ".join(check_key_length(args.key)))
 
     open_file.close()
     sys.exit(0)
