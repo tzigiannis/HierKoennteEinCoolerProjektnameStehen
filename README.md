@@ -54,16 +54,28 @@ Where
 ### encrypt 
 ```bash
 python3 encryptio.py encryption AES 'dasisteintestabc' CBC 'This string should be encrypted'
+
+encryptio.py - Published by Laura Tzigiannis and Moritz Nentwig
+---------------------------------------------------------------
 ```
 
 ### decryption
 ```bash
 python3 encryptio.py decryption AES 'dasisteintestabc' CBC encryptio_20_56_06.enc
+
 ```
 
 ### determining
 ```bash
 python3 determiner.py -f encryptio_20_56_06.enc -k 'dasisteintestabc'
+
+determiner.py - Published by Laura Tzigiannis and Moritz Nentwig
+---------------------------------------------------------------
+
+File extension: Unrecognized file extension
+File header: AES
+Block size: AES, DES, 3DES, IDEA, Blowfish
+Key length: AES, 3DES, Blowfish, IDEA
 ```
 
 ## Contributing 
