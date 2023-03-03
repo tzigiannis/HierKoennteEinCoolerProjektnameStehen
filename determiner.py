@@ -27,7 +27,7 @@ def check_file_extension(file):
         return("Unrecognized file extension")
 
 def check_file_header(file):
-    encryption_algorithms = ["AES", "DES", "3DES", "IDEA", "Blowfish"]
+    encryption_algorithms = ["AES", "3DES", "DES", "IDEA", "BLOWFISH"]
     file_header = file.read(128)
     for algorithm in encryption_algorithms: 
         if algorithm.encode('utf-8') in file_header:
@@ -45,7 +45,7 @@ def check_block_size(file):
         cipher_file_length = cipher_file_length - header_length
     
     if(cipher_file_length % 8 != 0):
-        return("Blocksize not supported by given encryption algorithms")
+        return(["Blocksize not supported by given encryption algorithms"])
     if(cipher_file_length % 16 != 0):
         return ["DES", "3DES", "IDEA", "Blowfish"]
     return ["AES", "DES", "3DES", "IDEA", "Blowfish"]
