@@ -1,5 +1,5 @@
 # Encryptio 
-Encrypt strings, decrypt files and determine encryption of encrypted files. 
+Encrypt strings, decrypt files and determine encryption algorithm of encrypted files. 
 
 ## Prerequisites 
 install required python in version 3.11
@@ -17,7 +17,7 @@ This will download and install the [cryptography](https://pypi.org/project/crypt
 encryptio.py use a CLI interface(using [argparse](https://docs.python.org/3/library/argparse.html)): 
 ### encryption
 ```bash
-python3 encryptio.py encryptio.py encryption [-h] {AES,DES,3DES,IDEA,BLOWFISH} cryptoKey {CBC,CFB,CTR,ECB,OFB} cryptoData
+python3 encryptio.py encryption [-h] {AES,DES,3DES,IDEA,BLOWFISH} cryptoKey {CBC,CFB,CTR,ECB,OFB} cryptoData
 ```
 
 Where 
@@ -42,12 +42,12 @@ determiner.py use a CLI interface(using [argparse](https://docs.python.org/3/lib
 
 ### determining
 ```bash
-python3 determiner.py [-h] -f encryptedFile -k encryptionKey
+python3 determiner.py [-h] -f cryptoDataFile -k cryptoKey
 ```
 
 Where 
-* **encryptedFile** - file to analyze
-* **encryptionKey** - key to analyze 
+* **cryptoDataFile** - file to analyze
+* **cryptoKey** - key to analyze 
 
 ## Examples
 
