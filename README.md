@@ -1,9 +1,11 @@
 # Encryptio 
-Generic encryption software
+Encrypt strings, decrypt files and determine encryption algorithm of encrypted files. 
 
 ## Prerequisites 
-
-## Usage
+install required python in version 3.11
+```bash
+apt install python3.11
+```
 
 install required libraries via requirements 
 ```bash
@@ -11,27 +13,76 @@ pip install -r requirements.txt
 ```
 This will download and install the [cryptography](https://pypi.org/project/cryptography/) and [cryptodome](https://pypi.org/project/pycryptodome/#description) libraries. 
 
-encryptio uses a CLI interface(using [argparse](https://docs.python.org/3/library/argparse.html)): 
-
+## Usage of encryptio.py 
+encryptio.py use a CLI interface(using [argparse](https://docs.python.org/3/library/argparse.html)): 
+### encryption
 ```bash
-python3 encryptio.py [-h] encryptionAlgorithm encryptionKey encryptionLibrary encryptionObjectIdentifier (encryptionObject)
+python3 encryptio.py encryption [-h] {AES,DES,3DES,IDEA,BLOWFISH} cryptoKey {CBC,CFB,CTR,ECB,OFB} cryptoData
 ```
 
 Where 
-* **encryptionAlgorithm** - the algorithm to encrypt your object with
-* **encryptionKey** - the string key to encrypt your object with
-* **encryptionLibrary** - the encryption library to encrypt with
-* **encryptionObjectIdentifier** - the identifier of the object to encrypt
-* **encryptionObject** - the options for the object to encrypt
+* **{AES,DES,3DES,IDEA,BLOWFISH}** - algorithm to encrypt your string with
+* **cryptoKey** - key to encrypt your string with
+* **{CBC,CFB,CTR,ECB,OFB}** - mode of encryption
+* **cryptoData** - string to encrypt
 
-* **-o** - the optional output file to write the encrypted object to
+### decryption
+```bash
+python3 encryptio.py decryption [-h] {AES,DES,3DES,IDEA,BLOWFISH} cryptoKey {CBC,CFB,CTR,ECB,OFB} cryptoDataFile
+```
 
-### EncryptionObjects
+Where 
+* **{AES,DES,3DES,IDEA,BLOWFISH}** - algorithm to decrypt your file with
+* **cryptoKey** - key to decrypt your file with
+* **{CBC,CFB,CTR,ECB,OFB}** - mode of encryption
+* **cryptoDataFile** - file to decrypt
 
-* **file** - the input file to encrypt
-* **message** - the input message to encrypt
+## Usage of determiner.py 
+determiner.py use a CLI interface(using [argparse](https://docs.python.org/3/library/argparse.html)): 
+
+### determining
+```bash
+python3 determiner.py [-h] -f cryptoDataFile -k cryptoKey
+```
+
+Where 
+* **cryptoDataFile** - file to analyze
+* **cryptoKey** - key to analyze 
 
 ## Examples
+
+### encrypt 
+```bash
+python3 encryptio.py encryption AES 'PsaDqdsYnlAQjRXm' CBC 'This string should be encrypted'
+
+encryptio.py - Published by Laura Tzigiannis and Moritz Nentwig
+---------------------------------------------------------------
+
+Encryption successfull: File created: encryptio_20_56_06.enc
+```
+
+### decryption
+```bash
+python3 encryptio.py decryption AES 'PsaDqdsYnlAQjRXm' CBC encryptio_20_56_06.enc
+
+encryptio.py - Published by Laura Tzigiannis and Moritz Nentwig
+---------------------------------------------------------------
+
+Decryption successfull: This string should be encrypted
+```
+
+### determining
+```bash
+python3 determiner.py -f encryptio_20_56_06.enc -k 'PsaDqdsYnlAQjRXm'
+
+determiner.py - Published by Laura Tzigiannis and Moritz Nentwig
+---------------------------------------------------------------
+
+File extension: Unrecognized file extension
+File header: AES
+Block size: AES, DES, 3DES, IDEA, Blowfish
+Key length: AES, 3DES, Blowfish, IDEA
+```
 
 ## Contributing 
 
