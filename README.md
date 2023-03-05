@@ -53,7 +53,7 @@ Where
 
 ### encrypt 
 ```bash
-python3 encryptio.py encryption AES 'dasisteintestabc' CBC 'This string should be encrypted'
+python3 encryptio.py encryption AES 'PsaDqdsYnlAQjRXm' CBC 'This string should be encrypted'
 
 encryptio.py - Published by Laura Tzigiannis and Moritz Nentwig
 ---------------------------------------------------------------
@@ -63,7 +63,7 @@ Encryption successfull: File created: encryptio_20_56_06.enc
 
 ### decryption
 ```bash
-python3 encryptio.py decryption AES 'dasisteintestabc' CBC encryptio_20_56_06.enc
+python3 encryptio.py decryption AES 'PsaDqdsYnlAQjRXm' CBC encryptio_20_56_06.enc
 
 encryptio.py - Published by Laura Tzigiannis and Moritz Nentwig
 ---------------------------------------------------------------
@@ -73,7 +73,7 @@ Decryption successfull: This string should be encrypted
 
 ### determining
 ```bash
-python3 determiner.py -f encryptio_20_56_06.enc -k 'dasisteintestabc'
+python3 determiner.py -f encryptio_20_56_06.enc -k 'PsaDqdsYnlAQjRXm'
 
 determiner.py - Published by Laura Tzigiannis and Moritz Nentwig
 ---------------------------------------------------------------
